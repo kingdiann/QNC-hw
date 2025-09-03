@@ -1,0 +1,40 @@
+import numpy as np
+import random as rnd
+import collections
+import matplotlib.pyplot as plt
+import time
+import scipy.stats as st
+
+from scipy.stats import bernoulli, binom, poisson, chi2
+from IPython.display import clear_output
+from operator import itemgetter
+from statsmodels.stats import proportion
+
+from numpy import matlib
+
+# The full probability distribution describes the probabilty of obtaining each 
+#   possible number of successes (k), given n and p. If we set n=10, the the 
+#   possible values of k are 0, 1, ..., 10. Now we use binom.rvs to simulate 
+#   many different picks to get a full distribution
+p = 0.7
+n = 10                      # number of "trials" per "experiment"
+num_experiments = 10;     # number of "experiments"
+outcomes = binom.rvs(n,p,size=num_experiments)
+
+# Show a bar plot (histogram) of all of the possible outcomes
+counts = collections.Counter(outcomes)
+plt.subplot(211)
+plt.bar(counts.keys(), counts.values())
+plt.xlim([-1, n+1])
+plt.title(f'Binomial distribution, n={n}, p={p:.2f}, {num_experiments} simulations')
+plt.ylabel('Count')
+
+# Show a normalized version that is a pdf. Here counts (the x-axis of the histogram) 
+#   is a DISCRETE variable, so we just have to add up the values
+normalized_counts = {k: v / total for total in (sum(counts.values()),) for k, v in counts.items()}
+plt.subplot(212)
+plt.bar(normalized_counts.keys(), normalized_counts.values())
+plt.xlim([-1, n+1])
+plt.xlabel(f'Probability of success in {n} tries')
+plt.ylabel('Probability')
+plt.subplots_adjust(hspace=0.3)
