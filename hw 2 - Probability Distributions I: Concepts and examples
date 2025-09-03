@@ -52,5 +52,4 @@ plt.ylabel(f'P({k} quanta)')
 plt.title(f'Binomial probabilities (n={n}, k={k})')
 plt.show()
 
-# %% [markdown] 
-commentary 
+
