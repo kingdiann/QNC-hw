@@ -1,44 +1,56 @@
+# %%
 # -----------------
 # Exercise 1
 # -----------------
 
 import numpy as np
-import random as rnd
-import collections
 import matplotlib.pyplot as plt
-import time
-import scipy.stats as st
+from scipy.stats import binom
 
-from scipy.stats import bernoulli, binom, poisson, chi2
-from IPython.display import clear_output
-from operator import itemgetter
-from statsmodels.stats import proportion
+# parameters
+n = 10   # number of quanta
+p = 0.2  # release probability
 
-from numpy import matlib
+# possible outcomes: 0 to 10 quanta released
+k = np.arange(0, n+1)
 
-# The full probability distribution describes the probabilty of obtaining each 
-#   possible number of successes (k), given n and p. If we set n=10, the the 
-#   possible values of k are 0, 1, ..., 10. Now we use binom.rvs to simulate 
-#   many different picks to get a full distribution
-p = 0.7
-n = 10                      # number of "trials" per "experiment"
-num_experiments = 10;     # number of "experiments"
-outcomes = binom.rvs(n,p,size=num_experiments)
+# exact binomial probabilities
+probs = binom.pmf(k, n, p)
 
-# Show a bar plot (histogram) of all of the possible outcomes
-counts = collections.Counter(outcomes)
-plt.subplot(211)
-plt.bar(counts.keys(), counts.values())
-plt.xlim([-1, n+1])
-plt.title(f'Binomial distribution, n={n}, p={p:.2f}, {num_experiments} simulations')
-plt.ylabel('Count')
+# print probabilities
+for i, pr in zip(k, probs):
+    print(f"P({i} quanta) = {pr:.4f}")
 
-# Show a normalized version that is a pdf. Here counts (the x-axis of the histogram) 
-#   is a DISCRETE variable, so we just have to add up the values
-normalized_counts = {k: v / total for total in (sum(counts.values()),) for k, v in counts.items()}
-plt.subplot(212)
-plt.bar(normalized_counts.keys(), normalized_counts.values())
-plt.xlim([-1, n+1])
-plt.xlabel(f'Probability of success in {n} tries')
+# plot
+plt.bar(k, probs)
+plt.xlabel('Number of quanta released')
 plt.ylabel('Probability')
-plt.subplots_adjust(hspace=0.3)
+plt.title(f'Binomial Distribution (n={n}, p={p})')
+plt.show()
+
+# %%
+# -----------------
+# Exercise 2
+# -----------------
+
+# parameters
+n = 14   # number of quanta
+p = np.arange(0.1, 1.1, 0.1) # release probability 0.1 to 1
+k = 8 # known quantal release
+
+# exact binomial probabilities
+probs = binom.pmf(k, n, p)
+
+# print probabilities
+for pi, pr in zip(p, probs):
+    print(f"P(k={k} | p={pi:.1f}) = {pr:.6f}")
+
+# plot
+plt.bar(p, probs, width=0.05)
+plt.xlabel('Release probability p')
+plt.ylabel(f'P({k} quanta)')
+plt.title(f'Binomial probabilities (n={n}, k={k})')
+plt.show()
+
+# %% [markdown] 
+commentary 
