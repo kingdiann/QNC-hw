@@ -1,0 +1,50 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# -----------------------------
+# Exercise 1 
+# -----------------------------
+# Given: false positive rate = 0.05
+false_positive_rate = 0.05 
+alpha = 0.05  # significance level
+
+is_significant = false_positive_rate <= alpha  # is significant if false pos rate is less than or equal to alpha 
+decision_text = (
+    f"Exercise 1 — p-value (under H0) = {false_positive_rate:.2f}; "
+    f"alpha = {alpha:.2f}. "
+    f"Result is {'statistically significant' if is_significant else 'not statistically significant'} at the 0.05 level."
+)
+print(decision_text)
+
+# -----------------------------
+# Exercise 2 (posterior P(infected | positive) across priors)
+# -----------------------------
+# Assumptions from the prompt:
+# - False positive rate = 0.05  =>  P(positive | not infected) = 0.05
+# - No false negatives           =>  P(positive | infected) = 1.00 (sensitivity = 1)
+fpr = 0.05         # P(positive∣not infected)
+tpr = 1.00         # P(positive∣infected)  
+
+priors = np.round(np.arange(0.0, 1.0 + 0.1, 0.1), 2)
+
+# P(positive)=P(positive∣infected)⋅P(infected)+P(positive∣not infected)⋅P(not infected)
+P_pos = (tpr * priors + fpr * (1 - priors))
+
+#P(infected∣positive)=P(positive∣infected)⋅P(infected)/P(positive)
+posteriors = np.where(P_pos > 0, (tpr * priors) / P_pos, np.nan)
+
+df = pd.DataFrame({
+    "Prior prevalence P(infected)": priors,
+    "Posterior P(infected | positive)": np.round(posteriors, 4)
+})
+
+
+# Plot updated posterior vs prior
+plt.figure()
+plt.plot(priors, posteriors, marker="o")
+plt.xlabel("Prior prevalence  P(infected)")
+plt.ylabel("Posterior  P(infected | positive)")
+plt.title("Positive test -> Posterior infection probability vs prior prevalence\n(fpr=0.05, tpr=1.0)")
+plt.grid(True)
+plt.show()
