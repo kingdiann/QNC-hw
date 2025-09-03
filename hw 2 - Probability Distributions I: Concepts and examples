@@ -52,4 +52,31 @@ plt.ylabel(f'P({k} quanta)')
 plt.title(f'Binomial probabilities (n={n}, k={k})')
 plt.show()
 
+# %%
+# -----------------
+# Exercise 3
+# -----------------
 
+# parameters
+n = 14   # number of quanta
+p = np.arange(0.1, 1.1, 0.1) # release probability 0.1 to 1
+k2 = 5 # known quantal release
+
+# exact binomial probabilities
+probs2 = binom.pmf(k2, n, p)
+
+# print probabilities
+for pi, pr in zip(p, probs2):
+    print(f"P(k={k2} | p={pi:.1f}) = {pr:.6f}")
+
+comb_probs = probs * probs2
+log_comb_probs = np.log(probs) + np.log(probs2) 
+
+# print probabilities
+print(f"combined likelihoods")
+for pi, pr in zip(p, comb_probs):
+    print(f"P(k={k2} | p={pi:.1f}) = {pr:.6f}")
+
+print(f"combined log-likelihoods")
+for pi, pr in zip(p, log_comb_probs):
+    print(f"P(k={k2} | p={pi:.1f}) = {pr:.6f}")
