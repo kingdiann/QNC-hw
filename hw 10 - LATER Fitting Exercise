@@ -1,0 +1,57 @@
+% LATER Fitting Exercise
+
+%%  1. Get the data
+
+data = later_getData([], [], 0.2);
+RTs = data{1};
+clear data
+
+%%  2. Define the objective function
+ 
+% EXERCISE:
+laterErrFcn = @(fits) -sum(log(later_pdf(RTs, fits(1), fits(2))));;
+
+
+%%  3. Define initial conditions
+
+lowerBounds = [0.001 0.001];
+upperBounds = [1000 1000]; 
+
+% EXERCISE:
+reciprocal_RTs = 1 ./ RTs;
+initialValues = [mean(reciprocal_RTs), std(reciprocal_RTs)];
+
+%%  4. Run the fits
+% 
+%   We will be using GlobalSearch . The general advantage of this approach 
+%   is to avoid local minima; for details, see:
+%   https://www.mathworks.com/help/gads/how-globalsearch-and-multistart-work.html
+%  
+%   These options seem to work well, but I don't have a stronger
+%   rationale for using them. See the Matlab documentation if you really
+%   want to dive in and understand them, and let me know if you find
+%   better settings!
+opts = optimoptions(@fmincon,    ... % "function minimization with constraints"
+   'Algorithm',   'active-set',  ...
+   'MaxIter',     3000,          ...
+   'MaxFunEvals', 3000);
+
+% Definine the "optimization problem" using variables defined above
+problem = createOptimProblem('fmincon',    ...
+    'objective',   laterErrFcn,     ... % Use the objective function
+    'x0',          initialValues,   ... % Initial conditions
+    'lb',          lowerBounds,     ... % Parameter lower bounds
+    'ub',          upperBounds,     ... % Parameter upper bounds
+    'options',     opts);                % Options defined above
+
+% Create a GlobalSearch object
+gs = GlobalSearch;
+   
+% Run it, returning the best-fitting parameter values and the negative-
+% log-likelihood returned by the objective function
+[fits(ii,:), nllk] = run(gs,problem);
+
+%%  5. Evaluate the fits
+%
+%   EXERCISE: How do you know if you got a reasonable answer?
+% reciprobit plot should have a linear fit - signifies normal distribution; raw RT should be roughly unimodal and right skewed; high deltaS/muR ratio (low signal to noise); parameters near or over set bounds 
